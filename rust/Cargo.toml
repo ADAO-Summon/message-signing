@@ -16,3 +16,5 @@ cryptoxide = "0.3.2"
 linked-hash-map = "0.5.3"
 hex = "0.4.0"
 pruefung = "0.2.1"
+wasm-bindgen = { version = "=0.2.82", features = ["serde-serialize"] }
+
