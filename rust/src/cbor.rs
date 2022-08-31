@@ -1,6 +1,6 @@
 use super::*;
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct TaggedCBOR {
     tag: BigNum,
@@ -9,7 +9,7 @@ pub struct TaggedCBOR {
 
 to_from_bytes!(TaggedCBOR);
 
-#[wasm_bindgen]
+
 impl TaggedCBOR {
     pub fn tag(&self) -> BigNum {
         self.tag
@@ -27,7 +27,7 @@ impl TaggedCBOR {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct CBORArray {
     definite: bool,
@@ -36,7 +36,7 @@ pub struct CBORArray {
 
 to_from_bytes!(CBORArray);
 
-#[wasm_bindgen]
+
 impl CBORArray {
     pub fn new() -> Self {
         Self {
@@ -79,7 +79,7 @@ impl From<Vec<CBORValue>> for CBORArray {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct CBORObject {
     definite: bool,
@@ -88,7 +88,7 @@ pub struct CBORObject {
 
 to_from_bytes!(CBORObject);
 
-#[wasm_bindgen]
+
 impl CBORObject {
     pub fn new() -> Self {
         Self {
@@ -126,7 +126,7 @@ impl CBORObject {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum CBORSpecialType {
     Bool,
@@ -147,13 +147,13 @@ enum CBORSpecialEnum {
     Null,
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct CBORSpecial(CBORSpecialEnum);
 
 to_from_bytes!(CBORSpecial);
 
-#[wasm_bindgen]
+
 impl CBORSpecial {
     pub fn new_bool(b: bool) -> Self {
         Self(CBORSpecialEnum::Bool(b))
@@ -280,7 +280,7 @@ impl PartialOrd for CBORSpecial {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum CBORValueKind {
     Int,
@@ -303,13 +303,13 @@ pub enum CBORValueEnum {
     Special(CBORSpecial),
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct CBORValue(pub (crate) CBORValueEnum);
 
 to_from_bytes!(CBORValue);
 
-#[wasm_bindgen]
+
 impl CBORValue {
     pub fn new_int(int: &Int) -> Self {
         Self(CBORValueEnum::Int(int.clone()))

@@ -23,7 +23,7 @@ macro_rules! from_bytes {
     ($name:ident, $data: ident, $body:block) => {
         // wasm-exposed JsError return - JsError panics when used outside wasm
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-        #[wasm_bindgen]
+        
         impl $name {
             pub fn from_bytes($data: Vec<u8>) -> Result<$name, JsError> {
                 Ok($body?)
@@ -51,7 +51,7 @@ macro_rules! to_bytes {
     ($name:ident) => {
         // wasm-exposed JsError return - JsError panics when used outside wasm
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-        #[wasm_bindgen]
+        
         impl $name {
             pub fn to_bytes(&self) -> Vec<u8> {
                 let mut buf = Serializer::new_vec();
@@ -91,7 +91,7 @@ macro_rules! label_enum {
             $variant_name:ident = $variant_value:literal,
         )*
     }) => {
-        #[wasm_bindgen]
+        
         #[derive(Copy, Clone, Debug)]
         pub enum $enum_name {
             $(
@@ -210,13 +210,13 @@ impl CBORReadLen {
 // Generic u64 wrapper for platforms that don't support u64 or BigInt/etc
 // This is an unsigned type - no negative numbers.
 // Can be converted to/from plain rust 
-#[wasm_bindgen]
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BigNum(u64);
 
 to_from_bytes!(BigNum);
 
-#[wasm_bindgen]
+
 impl BigNum {
     // Create a BigNum from a standard rust string representation
     pub fn from_str(string: &str) -> Result<BigNum, JsError> {
@@ -275,11 +275,11 @@ pub fn from_bignum(val: &BigNum) -> u64 {
 }
 
 // CBOR has int = uint / nint
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Int(pub (crate) i128);
 
-#[wasm_bindgen]
+
 impl Int {
     pub fn new(x: BigNum) -> Self {
         Self(x.0 as i128)

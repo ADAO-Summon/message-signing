@@ -1,6 +1,6 @@
 use super::*;
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSESign1Builder {
     headers: Headers,
@@ -10,7 +10,7 @@ pub struct COSESign1Builder {
     hashed: bool,
 }
 
-#[wasm_bindgen]
+
 impl COSESign1Builder {
     pub fn new(headers: &Headers, payload: Vec<u8>, is_payload_external: bool) -> Self {
         let mut all_headers = headers.clone();
@@ -61,7 +61,7 @@ impl COSESign1Builder {
 }
 
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSESignBuilder {
     headers: Headers,
@@ -71,7 +71,7 @@ pub struct COSESignBuilder {
     hashed: bool,
 }
 
-#[wasm_bindgen]
+
 impl COSESignBuilder {
     pub fn new(headers: &Headers, payload: Vec<u8>, is_payload_external: bool) -> Self {
         Self {
@@ -171,7 +171,7 @@ label_enum!(KeyOperation {
     DeriveBits = 8,
 });
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct EdDSA25519Key {
     pubkey_bytes: Vec<u8>,
@@ -180,7 +180,7 @@ pub struct EdDSA25519Key {
     for_verifying: bool,
 }
 
-#[wasm_bindgen]
+
 impl EdDSA25519Key {
     pub fn new(pubkey_bytes: Vec<u8>) -> Self {
         Self {

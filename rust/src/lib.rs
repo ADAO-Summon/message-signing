@@ -4,12 +4,6 @@
 use std::io::{BufRead, Write};
 use linked_hash_map::LinkedHashMap;
 
-#[cfg(not(all(target_arch = "wasm32", not(target_os = "emscripten"))))]
-use noop_proc_macro::wasm_bindgen;
-
-#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-use wasm_bindgen::prelude::*;
-
 use cbor_event::{self, de::Deserializer, se::{Serialize, Serializer}};
 
 pub mod builders;
@@ -25,13 +19,13 @@ use cbor::*;
 use error::*;
 use utils::*;
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct ProtectedHeaderMap(Vec<u8>);
 
 to_from_bytes!(ProtectedHeaderMap);
 
-#[wasm_bindgen]
+
 impl ProtectedHeaderMap {
     pub fn new_empty() -> Self {
         Self(Vec::new())
@@ -56,7 +50,7 @@ impl ProtectedHeaderMap {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum LabelKind {
     Int,
@@ -69,13 +63,13 @@ enum LabelEnum {
     Text(String),
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Label(LabelEnum);
 
 to_from_bytes!(Label);
 
-#[wasm_bindgen]
+
 impl Label {
     pub fn new_int(int: &Int) -> Self {
         Self(LabelEnum::Int(int.clone()))
@@ -130,13 +124,13 @@ impl Label {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Labels(Vec<Label>);
 
 to_from_bytes!(Labels);
 
-#[wasm_bindgen]
+
 impl Labels {
     pub fn new() -> Self {
         Self(Vec::new())
@@ -155,13 +149,13 @@ impl Labels {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSESignatures(Vec<COSESignature>);
 
 to_from_bytes!(COSESignatures);
 
-#[wasm_bindgen]
+
 impl COSESignatures {
     pub fn new() -> Self {
         Self(Vec::new())
@@ -180,13 +174,13 @@ impl COSESignatures {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct CounterSignature(COSESignatures);
 
 to_from_bytes!(CounterSignature);
 
-#[wasm_bindgen]
+
 impl CounterSignature {
     pub fn new_single(cose_signature: &COSESignature) -> Self {
         let mut sigs = COSESignatures::new();
@@ -203,7 +197,7 @@ impl CounterSignature {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct HeaderMap {
     // INT(1) key type
@@ -226,7 +220,7 @@ pub struct HeaderMap {
 
 to_from_bytes!(HeaderMap);
 
-#[wasm_bindgen]
+
 impl HeaderMap {
     pub fn set_algorithm_id(&mut self, algorithm_id: &Label) {
         self.algorithm_id = Some(algorithm_id.clone())
@@ -379,7 +373,7 @@ impl HeaderMap {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct Headers {
     protected: ProtectedHeaderMap,
@@ -388,7 +382,7 @@ pub struct Headers {
 
 to_from_bytes!(Headers);
 
-#[wasm_bindgen]
+
 impl Headers {
     pub fn protected(&self) -> ProtectedHeaderMap {
         self.protected.clone()
@@ -406,7 +400,7 @@ impl Headers {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSESignature {
     headers: Headers,
@@ -415,7 +409,7 @@ pub struct COSESignature {
 
 to_from_bytes!(COSESignature);
 
-#[wasm_bindgen]
+
 impl COSESignature {
     pub fn headers(&self) -> Headers {
         self.headers.clone()
@@ -433,7 +427,7 @@ impl COSESignature {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSESign1 {
     headers: Headers,
@@ -443,7 +437,7 @@ pub struct COSESign1 {
 
 to_from_bytes!(COSESign1);
 
-#[wasm_bindgen]
+
 impl COSESign1 {
     pub fn headers(&self) -> Headers {
         self.headers.clone()
@@ -481,7 +475,7 @@ impl COSESign1 {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSESign {
     headers: Headers,
@@ -491,7 +485,7 @@ pub struct COSESign {
 
 to_from_bytes!(COSESign);
 
-#[wasm_bindgen]
+
 impl COSESign {
     pub fn headers(&self) -> Headers {
         self.headers.clone()
@@ -514,7 +508,7 @@ impl COSESign {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum SignedMessageKind {
     COSESIGN,
@@ -527,13 +521,13 @@ enum SignedMessageEnum {
     COSESIGN1(COSESign1),
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct SignedMessage(SignedMessageEnum);
 
 to_from_bytes!(SignedMessage);
 
-#[wasm_bindgen]
+
 impl SignedMessage {
     pub fn new_cose_sign(cose_sign: &COSESign) -> Self {
         Self(SignedMessageEnum::COSESIGN(cose_sign.clone()))
@@ -604,7 +598,7 @@ impl SignedMessage {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum SigContext {
     Signature,
@@ -614,7 +608,7 @@ pub enum SigContext {
 
 
 // We sign this structure's to_bytes() serialization instead of signing of messages directly
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct SigStructure {
     context: SigContext,
@@ -626,7 +620,7 @@ pub struct SigStructure {
 
 to_from_bytes!(SigStructure);
 
-#[wasm_bindgen]
+
 impl SigStructure {
     pub fn context(&self) -> SigContext {
         self.context.clone()
@@ -663,7 +657,7 @@ impl SigStructure {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSEEncrypt0 {
     headers: Headers,
@@ -672,7 +666,7 @@ pub struct COSEEncrypt0 {
 
 to_from_bytes!(COSEEncrypt0);
 
-#[wasm_bindgen]
+
 impl COSEEncrypt0 {
     pub fn headers(&self) -> Headers {
         self.headers.clone()
@@ -690,26 +684,26 @@ impl COSEEncrypt0 {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct PasswordEncryption(COSEEncrypt0);
 
 to_from_bytes!(PasswordEncryption);
 
-#[wasm_bindgen]
+
 impl PasswordEncryption {
     pub fn new(data: &COSEEncrypt0) -> Self {
         Self(data.clone())
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSERecipients(Vec<COSERecipient>);
 
 to_from_bytes!(COSERecipients);
 
-#[wasm_bindgen]
+
 impl COSERecipients {
     pub fn new() -> Self {
         Self(Vec::new())
@@ -728,7 +722,7 @@ impl COSERecipients {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSEEncrypt {
     headers: Headers,
@@ -738,7 +732,7 @@ pub struct COSEEncrypt {
 
 to_from_bytes!(COSEEncrypt);
 
-#[wasm_bindgen]
+
 impl COSEEncrypt {
     pub fn headers(&self) -> Headers {
         self.headers.clone()
@@ -761,7 +755,7 @@ impl COSEEncrypt {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSERecipient {
     headers: Headers,
@@ -770,7 +764,7 @@ pub struct COSERecipient {
 
 to_from_bytes!(COSERecipient);
 
-#[wasm_bindgen]
+
 impl COSERecipient {
     pub fn headers(&self) -> Headers {
         self.headers.clone()
@@ -788,20 +782,20 @@ impl COSERecipient {
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct PubKeyEncryption(COSEEncrypt);
 
 to_from_bytes!(PubKeyEncryption);
 
-#[wasm_bindgen]
+
 impl PubKeyEncryption {
     pub fn new(data: &COSEEncrypt) -> Self {
         Self(data.clone())
     }
 }
 
-#[wasm_bindgen]
+
 #[derive(Clone, Debug)]
 pub struct COSEKey {
     // INT(1) key type, See KeyType enum (OKP, ECS, etc)
@@ -820,7 +814,7 @@ pub struct COSEKey {
 
 to_from_bytes!(COSEKey);
 
-#[wasm_bindgen]
+
 impl COSEKey {
     pub fn set_key_type(&mut self, key_type: &Label) {
         self.key_type = key_type.clone()
